@@ -24,7 +24,7 @@ public class TicTacToeNode implements GraphNode {
 	}
 	
 	@Override
-	public NodeCollection getAdjacentNodes() {
+	public NodeCollection getChildNodes() {
 		NodeCollection nodes = new NodeCollection();
 		
 		if (lastStep == null || lastStep.getMark() == Mark.Empty) {

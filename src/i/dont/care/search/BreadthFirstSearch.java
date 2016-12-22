@@ -1,17 +1,19 @@
 package i.dont.care.search;
 
-import i.dont.care.search.interfaces.*;
+import i.dont.care.search.interfaces.GraphNode;
+import i.dont.care.search.interfaces.Search;
+import i.dont.care.search.interfaces.SolutionChecker;
 
 import java.util.*;
 
-public class DepthFirstSearch implements Search {
+public class BreadthFirstSearch implements Search {
 	
 	private List<GraphNode> discoveredNodes = new ArrayList<>();
 	
 	private SolutionChecker checker;
 	private int depth;
 	
-	public DepthFirstSearch(SolutionChecker checker, int depth) {
+	public BreadthFirstSearch(SolutionChecker checker, int depth) {
 		this.checker = checker;
 		this.depth = depth;
 	}
@@ -31,11 +33,12 @@ public class DepthFirstSearch implements Search {
 			return new SearchResult(initial, 1);
 		}
 		
-		Stack<GraphNode> stack = new Stack<>();
-		stack.push(initial);
+		List<GraphNode> queue = new LinkedList<>();
+		queue.add(initial);
 		
-		while (!stack.isEmpty() && depth-- >= 0) {
-			GraphNode current = stack.pop();
+		while (!queue.isEmpty() && depth-- >= 0) {
+			GraphNode current = queue.get(0);
+			queue.remove(0);
 			
 			if (checker.isSolution(current)) {
 				return new SearchResult(current, 1);
@@ -43,7 +46,7 @@ public class DepthFirstSearch implements Search {
 			
 			if (!isDiscovered(current)) {
 				discoveredNodes.add(current);
-				current.getChildNodes().forEach(stack::push);
+				current.getChildNodes().forEach(queue::add);
 			}
 		}
 		

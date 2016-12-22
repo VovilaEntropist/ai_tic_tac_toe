@@ -35,4 +35,6 @@ public class Configuration {
 	public static final String ENEMY_IMAGE = "enemy_image";
 	public static final String PLAYERS = "player_collection";
 	public static final String STEP = "step";
+	
+	public static final int DEPTH = Integer.MAX_VALUE;
 }

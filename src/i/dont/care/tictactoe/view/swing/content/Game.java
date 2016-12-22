@@ -16,6 +16,8 @@ public class Game extends Content {
 	private String xImagePath;
 	private String oImagePath;
 	
+	
+	
 	public Game(JPanel parent, ContentType contentType, ContentListener listener,
 	            String xImagePath, String oImagePath) {
 		super(parent, contentType, listener);

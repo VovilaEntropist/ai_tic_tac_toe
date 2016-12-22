@@ -2,8 +2,8 @@ package i.dont.care.tictactoe.model;
 
 import i.dont.care.message.Message;
 import i.dont.care.message.MessageFactory;
+import i.dont.care.tictactoe.model.logic.TicTacToeEvaluation;
 import i.dont.care.tictactoe.mvc.IModel;
-import i.dont.care.tictactoe.model.logic.TicTacToeChecker;
 import i.dont.care.tictactoe.model.logic.Step;
 import i.dont.care.tictactoe.model.logic.TicTacToeNode;
 import i.dont.care.tictactoe.model.board.CellArray;
@@ -68,8 +68,8 @@ public class TicTacToe extends Observable implements IModel {
 		
 		notifyView(MessageFactory.createGameStateChanged(currentBoard, lastStep, nextPlayer));
 		
-		TicTacToeChecker checker = new TicTacToeChecker(mark, CHAIN_LENGTH);
-		if (checker.isDecision(new TicTacToeNode(currentBoard, new Step(index, mark)))) {
+		TicTacToeEvaluation checker = new TicTacToeEvaluation(mark, CHAIN_LENGTH);
+		if (checker.evaluate(new TicTacToeNode(currentBoard, new Step(index, mark))) > 0) {
 			stage = GameStage.Win;
 			notifyView(MessageFactory.createPlayerWin(player));
 			notifyView(MessageFactory.createGameEnded());

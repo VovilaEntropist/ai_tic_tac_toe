@@ -4,6 +4,6 @@ import i.dont.care.search.SearchResult;
 
 public interface Search {
 	
-	SearchResult search(GraphNode node, DecisionChecker checker);
+	SearchResult search(GraphNode node);
 	
 }

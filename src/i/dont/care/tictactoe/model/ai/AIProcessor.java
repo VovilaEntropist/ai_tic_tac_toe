@@ -1,15 +1,12 @@
 package i.dont.care.tictactoe.model.ai;
 
 import i.dont.care.message.Message;
-import i.dont.care.search.SearchResult;
+import i.dont.care.search.*;
 import i.dont.care.search.interfaces.GraphNode;
 import i.dont.care.search.interfaces.Search;
 import i.dont.care.tictactoe.model.Configuration;
-import i.dont.care.tictactoe.model.board.Cell;
 import i.dont.care.tictactoe.model.board.CellArray;
-import i.dont.care.tictactoe.model.board.Mark;
 import i.dont.care.tictactoe.model.logic.Step;
-import i.dont.care.tictactoe.model.logic.TicTacToeChecker;
 import i.dont.care.tictactoe.model.logic.TicTacToeNode;
 import i.dont.care.tictactoe.mvc.IController;
 import i.dont.care.tictactoe.model.Player;
@@ -47,11 +44,21 @@ public class AIProcessor implements Observer {
 		
 		GraphNode initialNode = new TicTacToeNode(board, lastStep);
 		
-		for (GraphNode node : initialNode.getAdjacentNodes()) {
-			SearchResult searchResult = search.search(node, new TicTacToeChecker(player.getMark(),
-					Configuration.CHAIN_TO_WIN));
+		if (search instanceof DepthFirstSearch || search instanceof BreadthFirstSearch) {
+			depthFirstSearch(initialNode);
+		} else if (search instanceof MinMaxSearch){
+			minMaxSearch(initialNode);
+		}
+		
+		CellArray board = ((TicTacToeNode) initialNode).getBoard();
+		doMove(board.getAnyEmpty());
+	}
+	
+	private void depthFirstSearch(GraphNode initialNode) {
+		for (GraphNode node : initialNode.getChildNodes()) {
+			SearchResult searchResult = search.search(node);
 			
-			if (searchResult != null) {
+			if (searchResult.getNode() != null) {
 				Step betterStep = ((TicTacToeNode) node).getLastStep();
 				
 				doMove(betterStep.getIndex());
@@ -59,24 +66,30 @@ public class AIProcessor implements Observer {
 				return;
 			}
 		}
+	}
+	
+	private void minMaxSearch(GraphNode initialNode) {
+		GraphNode bestNode = null;
+		int maxEval = Integer.MIN_VALUE;
 		
-		for (GraphNode node : initialNode.getAdjacentNodes()) {
-			SearchResult searchResult = search.search(node,
-					new TicTacToeChecker(player.getMark().getNext(), Configuration.CHAIN_TO_WIN));
+		NodeCollection nodes = initialNode.getChildNodes();
+		for (GraphNode node : nodes) {
+			SearchResult searchResult = search.search(node);
 			
-			if (searchResult == null) {
-				Step betterStep = ((TicTacToeNode) node).getLastStep();
-				
-				doMove(betterStep.getIndex());
-				//uploadInfo(searchResult.getSearchInfo().toString());
-				return;
+			if (searchResult.getEval() > maxEval) {
+				maxEval = searchResult.getEval();
+				bestNode = node;
 			}
 		}
 		
-		CellArray board = ((TicTacToeNode) initialNode).getBoard();
-		doMove(board.getAnyEmpty());
+		if (bestNode != null) {
+			Step betterStep = ((TicTacToeNode) bestNode).getLastStep();
+			
+			doMove(betterStep.getIndex());
+			//uploadInfo(searchResult.getSearchInfo().toString());
+			return;
+		}
 	}
-	
 	
 	private void updateBoard(CellArray board, Step lastStep) {
 		this.board = board;

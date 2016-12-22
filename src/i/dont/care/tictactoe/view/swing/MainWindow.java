@@ -1,12 +1,15 @@
 package i.dont.care.tictactoe.view.swing;
 
 import i.dont.care.message.Message;
+import i.dont.care.search.BreadthFirstSearch;
 import i.dont.care.search.DepthFirstSearch;
+import i.dont.care.search.MinMaxSearch;
 import i.dont.care.tictactoe.model.Configuration;
 import i.dont.care.tictactoe.controller.Controller;
 import i.dont.care.tictactoe.model.TicTacToe;
 import i.dont.care.tictactoe.model.ai.AIPlayer;
 import i.dont.care.tictactoe.model.board.Mark;
+import i.dont.care.tictactoe.model.logic.TicTacToeEvaluation;
 import i.dont.care.tictactoe.mvc.IController;
 import i.dont.care.tictactoe.mvc.IModel;
 import i.dont.care.tictactoe.mvc.IView;
@@ -29,8 +32,9 @@ public class MainWindow extends JFrame implements IView, ContentListener, Observ
 	private ContentHolderPanel contentPanel;
 	private MessagePanel messagePanel;
 
-	private boolean enabledMoves = false;
+	private boolean enabledMoves;
 	private Player player;
+	private Mark aiMark;
 	
 	public MainWindow(IController controller) throws HeadlessException {
 		this.controller = controller;
@@ -60,10 +64,12 @@ public class MainWindow extends JFrame implements IView, ContentListener, Observ
 		Content mainMenu =  new MainMenu(contentPanel, ContentType.MainMenu, this);
 		Content playerChoice = new PlayerChoice(contentPanel, ContentType.PlayerChoice, this, ContentType.MainMenu);
 		Content waitScreen = new WaitScreen(contentPanel, ContentType.WaitScreen, this);
+		Content aiChoice = new AIChoice(contentPanel, ContentType.AIChoice, this);
 
 		contentPanel.add(mainMenu);
 		contentPanel.add(playerChoice);
 		contentPanel.add(waitScreen);
+		contentPanel.add(aiChoice);
 		
 		contentPanel.show(ContentType.MainMenu);
 	}
@@ -84,14 +90,25 @@ public class MainWindow extends JFrame implements IView, ContentListener, Observ
 				}
 				break;
 			case VsAIStartGame:
-				contentPanel.show(ContentType.WaitScreen);
 				String name = (String) args[0];
 				Mark mark = (Mark) args[1];
+				aiMark = mark == Mark.Player1 ? Mark.Player2 : Mark.Player1;
 				player = new Player(name, mark);
 				addPlayer(player);
-				addPlayer(new AIPlayer("AI", mark == Mark.Player1 ? Mark.Player2 : Mark.Player1,
-						new DepthFirstSearch()));
-				//TODO выбор поиска
+				
+				contentPanel.show(ContentType.AIChoice);
+				break;
+			case DfsBtnClick:
+				TicTacToeEvaluation evaluation = new TicTacToeEvaluation(aiMark, Configuration.CHAIN_TO_WIN);
+				addPlayer(new AIPlayer("AI", aiMark, new DepthFirstSearch(evaluation, Configuration.DEPTH)));
+				break;
+			case BfsBtnClick:
+				evaluation = new TicTacToeEvaluation(aiMark, Configuration.CHAIN_TO_WIN);
+				addPlayer(new AIPlayer("AI", aiMark, new BreadthFirstSearch(evaluation, Configuration.DEPTH)));
+				break;
+			case minMaxBtnClick:
+				evaluation = new TicTacToeEvaluation(aiMark, Configuration.CHAIN_TO_WIN);
+				addPlayer(new AIPlayer("AI", aiMark, new MinMaxSearch(evaluation, evaluation, Configuration.DEPTH)));
 				break;
 			case TileCilck:
 				if (enabledMoves) {
