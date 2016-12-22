@@ -1,7 +1,9 @@
 package i.dont.care.search.interfaces;
 
+import i.dont.care.search.SearchResult;
+
 public interface Search {
 	
-	GraphNode search(GraphNode node, DecisionChecker checker);
+	SearchResult search(GraphNode node, DecisionChecker checker);
 	
 }

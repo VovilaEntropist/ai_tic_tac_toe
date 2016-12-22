@@ -20,9 +20,9 @@ public class DepthFirstSearch implements Search {
 	}
 	
 	@Override
-	public GraphNode search(GraphNode initial, DecisionChecker checker) {
+	public SearchResult search(GraphNode initial, DecisionChecker checker) {
 		if (checker.isDecision(initial)) {
-			return initial;
+			return new SearchResult(initial);
 		}
 		
 		Stack<GraphNode> stack = new Stack<>();
@@ -32,7 +32,7 @@ public class DepthFirstSearch implements Search {
 			GraphNode current = stack.pop();
 			
 			if (checker.isDecision(current)) {
-				return current;
+				return new SearchResult(current);
 			}
 			
 			if (!isDiscovered(current)) {

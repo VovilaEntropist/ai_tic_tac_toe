@@ -1,9 +1,10 @@
 package i.dont.care.clientserver.message;
 
-import i.dont.care.tictactoe.Configuration;
-import i.dont.care.tictactoe.serverside.Player;
-import i.dont.care.tictactoe.serverside.PlayerCollection;
-import i.dont.care.tictactoe.serverside.board.CellArray;
+import i.dont.care.tictactoe.model.Configuration;
+import i.dont.care.tictactoe.model.Player;
+import i.dont.care.tictactoe.model.PlayerCollection;
+import i.dont.care.tictactoe.model.board.CellArray;
+import i.dont.care.tictactoe.model.logic.Step;
 import i.dont.care.utils.Index;
 
 public class MessageFactory {
@@ -28,9 +29,10 @@ public class MessageFactory {
 		return message;
 	}
 	
-	public static Message createGameStateChanged(CellArray board, Player movingPlayer) {
+	public static Message createGameStateChanged(CellArray board, Step step, Player movingPlayer) {
 		Message message = new Message(Configuration.BOARD_CHANGED);
 		message.addParameter(Configuration.BOARD, board);
+		message.addParameter(Configuration.STEP, step);
 		message.addParameter(Configuration.PLAYER, movingPlayer);
 		return message;
 	}
