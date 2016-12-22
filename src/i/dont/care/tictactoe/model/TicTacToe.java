@@ -1,6 +1,7 @@
 package i.dont.care.tictactoe.model;
 
-import i.dont.care.clientserver.message.*;
+import i.dont.care.message.Message;
+import i.dont.care.message.MessageFactory;
 import i.dont.care.tictactoe.mvc.IModel;
 import i.dont.care.tictactoe.model.logic.TicTacToeChecker;
 import i.dont.care.tictactoe.model.logic.Step;
@@ -108,8 +109,8 @@ public class TicTacToe extends Observable implements IModel {
 		if (players.size() == PLAYER_COUNT) {
 			stage = GameStage.Active;
 			movingPlayer = defineMovingPlayer();
-			
 			notifyView(MessageFactory.createGameStarted(currentBoard, movingPlayer, players));
+			notifyView(MessageFactory.createStartMove(movingPlayer));
 		}
 	}
 	

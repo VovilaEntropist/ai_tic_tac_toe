@@ -13,10 +13,13 @@ public abstract class Content extends JPanel {
 	
 	public Content(Rectangle rectangle, ContentType contentType, ContentListener listener) {
 		super();
-		
 		this.contentType = contentType;
 		this.listener = listener;
 		this.setBounds(rectangle);
+	}
+	
+	public Content(JPanel parent, ContentType contentType, ContentListener listener) {
+		this(parent.getBounds(), contentType, listener);
 	}
 	
 	public ContentType getContentType() {

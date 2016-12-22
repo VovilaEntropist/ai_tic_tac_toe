@@ -1,4 +1,4 @@
-package i.dont.care.clientserver.message;
+package i.dont.care.message;
 
 
 import java.io.Serializable;

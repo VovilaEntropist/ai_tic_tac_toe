@@ -1,4 +1,4 @@
-package i.dont.care.clientserver.message;
+package i.dont.care.message;
 
 import i.dont.care.tictactoe.model.Configuration;
 import i.dont.care.tictactoe.model.Player;

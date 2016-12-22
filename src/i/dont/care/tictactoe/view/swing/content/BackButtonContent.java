@@ -14,15 +14,12 @@ import java.io.File;
 
 public abstract class BackButtonContent extends Content {
 	
-	protected Content from;
+	protected ContentType from;
 	protected JPanel backBtn;
 	
-	public BackButtonContent(Rectangle rectangle, ContentType contentType,
-	                         ContentListener listener, Content from) {
-		super(rectangle, contentType, listener);
-		
+	public BackButtonContent(JPanel parent, ContentType contentType, ContentListener listener, ContentType from) {
+		super(parent, contentType, listener);
 		this.from = from;
-		
 		init();
 	}
 	
@@ -34,7 +31,7 @@ public abstract class BackButtonContent extends Content {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				listener.handleContentEvent(BackButtonContent.this,
-						ContentEvent.BackPressed, new Object[] {from});
+						ContentEvent.BackPressed, from);
 			}
 		});
 
@@ -42,11 +39,11 @@ public abstract class BackButtonContent extends Content {
 		this.add(backBtn);
 	}
 	
-	public Content getFrom() {
+	public ContentType getFrom() {
 		return from;
 	}
 	
-	public void setFrom(Content from) {
+	public void setFrom(ContentType from) {
 		this.from = from;
 	}
 }

@@ -6,6 +6,10 @@ import java.util.HashMap;
 
 public class ContentCollection extends HashMap<ContentType, Content> {
 	
+	public Content put(Content value) {
+		return super.put(value.getContentType(), value);
+	}
+	
 	public void hideAll() {
 		for (Content content : values()) {
 			content.setVisible(false);

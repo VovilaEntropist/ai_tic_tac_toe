@@ -8,8 +8,8 @@ public class AIPlayer extends Player {
 	
 	private Search search;
 	
-	public AIPlayer(String nickname, Mark mark, String imagePath, Search search) {
-		super(nickname, mark, imagePath);
+	public AIPlayer(String nickname, Mark mark, Search search) {
+		super(nickname, mark);
 		this.search = search;
 	}
 	

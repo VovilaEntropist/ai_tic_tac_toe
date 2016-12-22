@@ -5,6 +5,9 @@ public class Configuration {
 	
 	public static final int CHAIN_TO_WIN = 3;
 	
+	public static final String X_MARK_PATH = "src/images/cross.png";
+	public static final String O_MARK_PATH = "src/images/nought.png";
+	
 	public static final int GAME_STARTED = 0;
 	public static final int END_OF_MOVE = 1;
 	public static final int START_OF_MOVE = 2;

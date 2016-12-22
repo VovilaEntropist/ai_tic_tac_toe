@@ -14,5 +14,6 @@ public class CenterPanel extends JPanel {
 		int panelX = (int) parentBounds.getWidth() / 2 - panelWidth / 2;
 		int panelY = (int) parentBounds.getHeight() / 2 - panelHeight / 2;
 		setBounds(panelX, panelY, panelWidth, panelHeight);
+		repaint();
 	}
 }

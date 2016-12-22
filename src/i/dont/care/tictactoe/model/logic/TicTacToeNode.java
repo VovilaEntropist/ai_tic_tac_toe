@@ -25,11 +25,12 @@ public class TicTacToeNode implements GraphNode {
 	
 	@Override
 	public NodeCollection getAdjacentNodes() {
-		if (lastStep.getMark() == Mark.Empty) {
-			return null;
+		NodeCollection nodes = new NodeCollection();
+		
+		if (lastStep == null || lastStep.getMark() == Mark.Empty) {
+			return nodes;
 		}
 		
-		NodeCollection nodes = new NodeCollection();
 		Mark nextMark = lastStep.getMark() == Mark.Player1 ? Mark.Player2 : Mark.Player1;
 		
 		board.forEachEmpty((index, cell) -> {

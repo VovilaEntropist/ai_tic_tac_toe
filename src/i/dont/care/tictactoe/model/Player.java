@@ -7,12 +7,10 @@ import java.io.Serializable;
 public class Player implements Serializable {
 	private String nickname;
 	private Mark mark;
-	private String imagePath;
 
-	public Player(String nickname, Mark mark, String imagePath) {
+	public Player(String nickname, Mark mark) {
 		this.nickname = nickname;
 		this.mark = mark;
-		this.imagePath = imagePath;
 	}
 	
 	public String getNickname() {
@@ -23,14 +21,6 @@ public class Player implements Serializable {
 		return mark;
 	}
 	
-	public String getImagePath() {
-		return imagePath;
-	}
-	
-	public void setImagePath(String imagePath) {
-		this.imagePath = imagePath;
-	}
-	
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -39,15 +29,13 @@ public class Player implements Serializable {
 		Player player = (Player) o;
 		
 		if (nickname != null ? !nickname.equals(player.nickname) : player.nickname != null) return false;
-		if (mark != player.mark) return false;
-		return imagePath != null ? imagePath.equals(player.imagePath) : player.imagePath == null;
+		return mark == player.mark;
 	}
 	
 	@Override
 	public int hashCode() {
 		int result = nickname != null ? nickname.hashCode() : 0;
 		result = 31 * result + (mark != null ? mark.hashCode() : 0);
-		result = 31 * result + (imagePath != null ? imagePath.hashCode() : 0);
 		return result;
 	}
 	

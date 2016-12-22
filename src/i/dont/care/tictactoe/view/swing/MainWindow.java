@@ -1,9 +1,12 @@
 package i.dont.care.tictactoe.view.swing;
 
-import i.dont.care.clientserver.message.Message;
+import i.dont.care.message.Message;
+import i.dont.care.search.DepthFirstSearch;
 import i.dont.care.tictactoe.model.Configuration;
 import i.dont.care.tictactoe.controller.Controller;
 import i.dont.care.tictactoe.model.TicTacToe;
+import i.dont.care.tictactoe.model.ai.AIPlayer;
+import i.dont.care.tictactoe.model.board.Mark;
 import i.dont.care.tictactoe.mvc.IController;
 import i.dont.care.tictactoe.mvc.IModel;
 import i.dont.care.tictactoe.mvc.IView;
@@ -12,7 +15,6 @@ import i.dont.care.tictactoe.view.swing.content.listener.ContentListener;
 import i.dont.care.tictactoe.model.Player;
 import i.dont.care.tictactoe.model.PlayerCollection;
 import i.dont.care.tictactoe.model.board.CellArray;
-import i.dont.care.tictactoe.model.board.Mark;
 import i.dont.care.tictactoe.view.swing.content.*;
 import i.dont.care.utils.Index;
 
@@ -24,21 +26,14 @@ import java.util.Observer;
 public class MainWindow extends JFrame implements IView, ContentListener, Observer {
 	
 	private IController controller;
-	private ContentCollection contents;
-	private JPanel contentPanel;
+	private ContentHolderPanel contentPanel;
 	private MessagePanel messagePanel;
-	
-	private Player player;
-	
-	private String serverIp;
-	private int serverPort;
 
-	private boolean enabledMoves;
-	
+	private boolean enabledMoves = false;
+	private Player player;
 	
 	public MainWindow(IController controller) throws HeadlessException {
 		this.controller = controller;
-		contents = new ContentCollection();
 		init();
 		initContent();
 		validate();
@@ -46,116 +41,68 @@ public class MainWindow extends JFrame implements IView, ContentListener, Observ
 	
 	private void init() {
 		messagePanel = new MessagePanel();
-		contentPanel = new JPanel();
+		contentPanel = new ContentHolderPanel();
 		
 		messagePanel.setPreferredSize(new Dimension(this.getWidth(), 30));
 		
 		this.setLayout(new BorderLayout());
-		this.add(messagePanel, BorderLayout.NORTH);
 		this.add(contentPanel, BorderLayout.CENTER);
 		
-		this.setTitle("Крестики-нолкики (STAR WARS EDITION)");
-		this.setSize(700, 700);
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.setVisible(true);
+		this.setTitle("Крестики-нолкики");
+		this.setSize(700, 500);
+		this.setResizable(false);
+		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		
-//		this.addWindowListener(new WindowAdapter() {
-//			@Override
-//			public void windowClosed(WindowEvent e) {
-//				removePlayer();
-//			}
-//		});
+		this.setVisible(true);
 	}
 	
 	private void initContent() {
-		Rectangle contentBounds = new Rectangle(0, 0, contentPanel.getWidth(),
-				contentPanel.getHeight());
-		Content mainMenu =  new MainMenu(contentBounds, ContentType.MainMenu, this);
-		Content playerChoice = new PlayerChoice(contentBounds, ContentType.PlayerChoice,
-				this, mainMenu);
-		Content serverCreate = new ServerCreate(contentBounds, ContentType.ServerCreate,
-				this, mainMenu);
-		Content serverConnect = new ServerConnect(contentBounds, ContentType.ServerConnect,
-				this, mainMenu);
-		Content waitScreen = new WaitScreen(contentBounds, ContentType.WaitScreen, this);
-		
-		contents.put(ContentType.MainMenu, mainMenu);
-		contents.put(ContentType.ServerCreate, serverCreate);
-		contents.put(ContentType.ServerConnect, serverConnect);
-		contents.put(ContentType.PlayerChoice, playerChoice);
-		contents.put(ContentType.WaitScreen, waitScreen);
-		
-		contents.show(ContentType.MainMenu);
-		
-		contentPanel.setLayout(null);
+		Content mainMenu =  new MainMenu(contentPanel, ContentType.MainMenu, this);
+		Content playerChoice = new PlayerChoice(contentPanel, ContentType.PlayerChoice, this, ContentType.MainMenu);
+		Content waitScreen = new WaitScreen(contentPanel, ContentType.WaitScreen, this);
+
 		contentPanel.add(mainMenu);
-		contentPanel.add(serverCreate);
-		contentPanel.add(serverConnect);
 		contentPanel.add(playerChoice);
 		contentPanel.add(waitScreen);
+		
+		contentPanel.show(ContentType.MainMenu);
 	}
 	
 	@Override
 	public void handleContentEvent(Content content, ContentEvent event, Object[] args) {
 		switch (event) {
-			case ServerBtnClick:
-				contents.show(ContentType.ServerCreate);
-				break;
-			case ConnectBtnClick:
-				contents.show(ContentType.ServerConnect);
-				break;
-			case AiBtnClick:
-				
+			case VsAIBtnClick:
+				contentPanel.show(ContentType.PlayerChoice);
 				break;
 			case ExitBtnClick:
+				System.exit(0);
 				break;
 			case BackPressed:
-				Content from = (Content) args[0];
+				ContentType from = (ContentType) args[0];
 				if (from != null) {
-					contents.show(from.getContentType());
+					contentPanel.show(from);
 				}
+				break;
+			case VsAIStartGame:
+				contentPanel.show(ContentType.WaitScreen);
+				String name = (String) args[0];
+				Mark mark = (Mark) args[1];
+				player = new Player(name, mark);
+				addPlayer(player);
+				addPlayer(new AIPlayer("AI", mark == Mark.Player1 ? Mark.Player2 : Mark.Player1,
+						new DepthFirstSearch()));
+				//TODO выбор поиска
 				break;
 			case TileCilck:
 				if (enabledMoves) {
 					Index index = (Index) args[0];
-					//doMove(index);
+					doMove(player, index);
 				}
 				break;
-			case StartServerBtnClick:
-				this.serverPort = (int) args[0];
-				((BackButtonContent) contents.get(ContentType.PlayerChoice))
-						.setFrom(contents.get(ContentType.ServerCreate));
-				contents.show(ContentType.PlayerChoice);
-				break;
-			case ConnectServerBtnClick:
-				this.serverIp = (String) args[0];
-				this.serverPort = (int) args[1];
-				
-				((BackButtonContent) contents.get(ContentType.PlayerChoice))
-						.setFrom(contents.get(ContentType.ServerConnect));
-				contents.show(ContentType.PlayerChoice);
-				break;
-			case StartServer:
-				//this.player = new Player((String) args[0], (Mark) args[1], (String) args[2], false);
-				
-				contents.show(ContentType.WaitScreen);
-				
-				//startServer(serverPort);
-				//connect(this.player, serverIp, serverPort);
-				break;
-			case ChoiceNickName:
-				break;
-			case ConnectServer:
-				//this.player = new Player((String) args[0], (Mark) args[1], (String) args[2], false);
-				
-				contents.show(ContentType.WaitScreen);
-				
-				//connect(this.player, serverIp, serverPort);
+			case BackMainMenu:
+				contentPanel.show(ContentType.MainMenu);
 				break;
 			case Error:
-				break;
-			case BackMainMenu:
-				contents.show(ContentType.MainMenu);
 				break;
 		}
 	}
@@ -176,31 +123,19 @@ public class MainWindow extends JFrame implements IView, ContentListener, Observ
 	}
 		
 	private void startGame(CellArray board, Player movingPlayer, PlayerCollection players) {
-		if (movingPlayer.equals(player)) {
-			messagePanel.setMessage("Ваш ход", 0);
-		} else {
-			messagePanel.setMessage("Ходит ваш противник: " + movingPlayer.getNickname(), 0);
-		}
-		
-		
-		String xPath;
-		String oPath;
+//		if (movingPlayer.equals(player)) {
+//			messagePanel.setMessage("Ваш ход", 0);
+//		} else {
+//			messagePanel.setMessage("Ходит ваш противник: " + movingPlayer.getNickname(), 0);
+//		}
 
-		if (player.getMark() == Mark.Player1) {
-			xPath = player.getImagePath();
-			oPath = players.getNext(player).getImagePath();
-		} else {
-			xPath = players.getNext(player).getImagePath();
-			oPath = player.getImagePath();
-		}
-
-		Rectangle contentBounds = new Rectangle(0, 0, contentPanel.getWidth(),
-			contentPanel.getHeight());
-		Content gameContent = new Game(contentBounds, ContentType.Game, this, xPath, oPath);
-		contents.put(ContentType.Game, gameContent);
+		String xPath = Configuration.X_MARK_PATH;
+		String oPath = Configuration.O_MARK_PATH;
+		
+		Content gameContent = new Game(contentPanel, ContentType.Game, this, xPath, oPath);
 		contentPanel.add(gameContent);
 		
-		contents.show(ContentType.Game);
+		contentPanel.show(ContentType.Game);
 	}
 	
 	private void endMove(Player nextPlayer) {
@@ -209,28 +144,30 @@ public class MainWindow extends JFrame implements IView, ContentListener, Observ
 	}
 	
 	private void prepareMove(Player player) {
-		messagePanel.setMessage("Ваш ход", 0);
-		enabledMoves = true;
+		if (this.player.equals(player)) {
+			messagePanel.setMessage("Ваш ход", 0);
+			enabledMoves = true;
+		}
 	}
 	
 	private void updateBoard(CellArray board) {
-		if (contents.get(ContentType.Game) == null) {
+		if (contentPanel.get(ContentType.Game) == null) {
 			return;
 		}
-		((Game) contents.get(ContentType.Game)).getBoard().updateBoard(board);
+		((Game) contentPanel.get(ContentType.Game)).getBoard().updateBoard(board);
 		repaint();
 	}
 	
 	private void winPlayer(Player player) {
-		messagePanel.setMessage("Победил игрок: " +  player.getNickname(), 0);
-		
-		Rectangle contentBounds = new Rectangle(0, 0, contentPanel.getWidth(),
-				contentPanel.getHeight());
-		Content gameEnd = new GameEnd(contentBounds, ContentType.GameEnd, this, player);
-		contents.put(ContentType.GameEnd, gameEnd);
-		contentPanel.add(gameEnd);
-		
-		contents.show(ContentType.GameEnd);
+//		messagePanel.setMessage("Победил игрок: " +  player.getNickname(), 0);
+//
+//		Rectangle contentBounds = new Rectangle(0, 0, contentPanel.getWidth(),
+//				contentPanel.getHeight());
+//		Content gameEnd = new GameEnd(contentBounds, ContentType.GameEnd, this, player);
+//		contents.put(ContentType.GameEnd, gameEnd);
+//		contentPanel.add(gameEnd);
+//
+//		contents.show(ContentType.GameEnd);
 	}
 	
 	private void endGameTie() {

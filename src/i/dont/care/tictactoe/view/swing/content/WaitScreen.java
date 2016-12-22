@@ -9,8 +9,8 @@ import java.awt.*;
 
 public class WaitScreen extends Content {
 	
-	public WaitScreen(Rectangle rectangle, ContentType contentType, ContentListener listener) {
-		super(rectangle, contentType, listener);
+	public WaitScreen(JPanel parent, ContentType contentType, ContentListener listener) {
+		super(parent, contentType, listener);
 		init();
 	}
 	

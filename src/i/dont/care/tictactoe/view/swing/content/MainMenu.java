@@ -11,33 +11,30 @@ import java.awt.*;
 public class MainMenu extends Content {
 	
 	private JPanel buttonPanel;
-	private JButton serverBtn;
-	private JButton clientBtn;
-	private JButton aiBtn;
+	private JButton vsPlayerBtn;
+	private JButton vsAIButton;
 	private JButton exitBtn;
 	
-	public MainMenu(Rectangle rectangle, ContentType contentType, ContentListener listener) {
-		super(rectangle, contentType, listener);
+	public MainMenu(JPanel parent, ContentType contentType, ContentListener listener) {
+		super(parent, contentType, listener);
 		init();
 		initListeners();
 		repaint();
 	}
 	
 	private void init() {
-		serverBtn = new JButton("Создать игру");
-		clientBtn = new JButton("Присоединиться к игре");
-		aiBtn = new JButton("Игра с компьютером (Скоро)");
+		vsPlayerBtn = new JButton("Игрок против игрока");
+		vsAIButton = new JButton("Игра против компьютера");
 		exitBtn = new JButton("Выход");
 		
-		aiBtn.setEnabled(false);
+		vsPlayerBtn.setEnabled(false);
 		
 		buttonPanel = new CenterPanel(this.getBounds(), 3, 3);
 		GridLayout layout = new GridLayout(4, 1, 0, 25);
 		buttonPanel.setLayout(layout);
 		
-		buttonPanel.add(serverBtn);
-		buttonPanel.add(clientBtn);
-		buttonPanel.add(aiBtn);
+		buttonPanel.add(vsPlayerBtn);
+		buttonPanel.add(vsAIButton);
 		buttonPanel.add(exitBtn);
 		
 		this.setLayout(null);
@@ -45,12 +42,10 @@ public class MainMenu extends Content {
 	}
 	
 	private void initListeners() {
-		serverBtn.addActionListener(e -> listener.handleContentEvent(this,
-				ContentEvent.ServerBtnClick, null));
-		clientBtn.addActionListener(e -> listener.handleContentEvent(this,
-				ContentEvent.ConnectBtnClick, null));
-		aiBtn.addActionListener(e -> listener.handleContentEvent(this,
-				ContentEvent.AiBtnClick, null));
+		vsPlayerBtn.addActionListener(e -> listener.handleContentEvent(this,
+				ContentEvent.VsPlayerBtnClick, null));
+		vsAIButton.addActionListener(e -> listener.handleContentEvent(this,
+				ContentEvent.VsAIBtnClick, null));
 		exitBtn.addActionListener(e -> listener.handleContentEvent(this,
 				ContentEvent.ExitBtnClick, null));
 	}

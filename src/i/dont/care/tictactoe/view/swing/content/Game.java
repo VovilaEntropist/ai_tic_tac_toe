@@ -5,6 +5,7 @@ import i.dont.care.tictactoe.view.swing.ContentType;
 import i.dont.care.tictactoe.view.swing.ImageLoader;
 import i.dont.care.tictactoe.view.swing.content.listener.ContentListener;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 
@@ -15,9 +16,9 @@ public class Game extends Content {
 	private String xImagePath;
 	private String oImagePath;
 	
-	public Game(Rectangle rectangle, ContentType contentType, ContentListener listener,
+	public Game(JPanel parent, ContentType contentType, ContentListener listener,
 	            String xImagePath, String oImagePath) {
-		super(rectangle, contentType, listener);
+		super(parent, contentType, listener);
 		this.xImagePath = xImagePath;
 		this.oImagePath = oImagePath;
 		init();

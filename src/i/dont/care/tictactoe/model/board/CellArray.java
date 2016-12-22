@@ -95,6 +95,18 @@ public class CellArray implements Serializable {
 		return getEmptyCount() == getRows() * getColumns();
 	}
 	
+	public Index getAnyEmpty() {
+		for (int i = 0; i < getRows(); i++) {
+			for (int j = 0; j < getColumns(); j++) {
+				if (cells[i][j].getMark() == Mark.Empty) {
+					return new Index(i, j);
+				}
+			}
+		}
+		
+		return null;
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
