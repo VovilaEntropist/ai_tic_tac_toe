@@ -36,5 +36,5 @@ public class Configuration {
 	public static final String PLAYERS = "player_collection";
 	public static final String STEP = "step";
 	
-	public static final int DEPTH = Integer.MAX_VALUE;
+	public static final int DEPTH = 500; //Integer.MAX_VALUE;
 }

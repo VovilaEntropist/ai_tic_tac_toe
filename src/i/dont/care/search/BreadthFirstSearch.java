@@ -36,7 +36,7 @@ public class BreadthFirstSearch implements Search {
 		List<AbstractGraphNode> queue = new LinkedList<>();
 		queue.add(initial);
 		
-		while (!queue.isEmpty() && depth-- >= 0) {
+		while (!queue.isEmpty()) {
 			AbstractGraphNode current = queue.get(0);
 			queue.remove(0);
 			
