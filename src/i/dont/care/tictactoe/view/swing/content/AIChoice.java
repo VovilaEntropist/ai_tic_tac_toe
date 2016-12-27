@@ -13,6 +13,7 @@ public class AIChoice extends Content {
 	private JPanel buttonPanel;
 	private JButton dfsBtn;
 	private JButton minMaxBtn;
+	private JButton alphaBettaBtn;
 	private JButton bfsBtn;
 	
 	public AIChoice(JPanel parent, ContentType contentType, ContentListener listener) {
@@ -26,14 +27,16 @@ public class AIChoice extends Content {
 		dfsBtn = new JButton("Поиск в глубину");
 		bfsBtn = new JButton("Поиск в ширину");
 		minMaxBtn = new JButton("Минимаксный алгоритм");
+		alphaBettaBtn = new JButton("Альфа бетта отсечение");
 		
 		buttonPanel = new CenterPanel(this.getBounds(), 3, 3);
-		GridLayout layout = new GridLayout(2, 1, 0, 25);
+		GridLayout layout = new GridLayout(4, 1, 0, 25);
 		buttonPanel.setLayout(layout);
 		
 		buttonPanel.add(dfsBtn);
 		buttonPanel.add(bfsBtn);
 		buttonPanel.add(minMaxBtn);
+		buttonPanel.add(alphaBettaBtn);
 		
 		this.setLayout(null);
 		this.add(buttonPanel);
@@ -46,6 +49,8 @@ public class AIChoice extends Content {
 				ContentEvent.BfsBtnClick, null));
 		minMaxBtn.addActionListener(e -> listener.handleContentEvent(this,
 				ContentEvent.minMaxBtnClick, null));
+		alphaBettaBtn.addActionListener(e -> listener.handleContentEvent(this,
+				ContentEvent.alphaBettaBtnClick, null));
 	}
 	
 	

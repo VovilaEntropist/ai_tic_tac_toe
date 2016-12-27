@@ -10,7 +10,7 @@ public class ContentHolderPanel extends JPanel {
 	private ContentCollection contents;
 	
 	public ContentHolderPanel() {
-		this.setLayout(null);
+		this.setLayout(new BorderLayout());
 		contents = new ContentCollection();
 	}
 	
@@ -23,7 +23,8 @@ public class ContentHolderPanel extends JPanel {
 			contents.put((Content) comp);
 		}
 		
-		return super.add(comp);
+		super.add(comp, BorderLayout.CENTER);
+		return comp;
 	}
 	
 	public Content get(Object key) {

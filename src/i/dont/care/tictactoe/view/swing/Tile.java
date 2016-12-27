@@ -23,9 +23,8 @@ public class Tile extends JPanel {
 	private BufferedImage xImage;
 	private BufferedImage oImage;
 	
-	public Tile(Rectangle rectangle, Index index, Mark mark, BufferedImage xImage, BufferedImage oImage,
+	public Tile(Index index, Mark mark, BufferedImage xImage, BufferedImage oImage,
 	            Content content, ContentListener listener) {
-		this.setBounds(rectangle);
 		this.setBackground(new Color(0, 0, 0, 0));
 		
 		this.index = index;

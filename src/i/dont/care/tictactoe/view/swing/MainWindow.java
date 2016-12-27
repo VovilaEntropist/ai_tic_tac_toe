@@ -1,6 +1,7 @@
 package i.dont.care.tictactoe.view.swing;
 
 import i.dont.care.message.Message;
+import i.dont.care.search.AlphaBetaSearch;
 import i.dont.care.search.BreadthFirstSearch;
 import i.dont.care.search.DepthFirstSearch;
 import i.dont.care.search.MinMaxSearch;
@@ -54,7 +55,7 @@ public class MainWindow extends JFrame implements IView, ContentListener, Observ
 		
 		this.setTitle("Крестики-нолкики");
 		this.setSize(700, 500);
-		this.setResizable(false);
+		//this.setResizable(false);
 		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		
 		this.setVisible(true);
@@ -108,7 +109,13 @@ public class MainWindow extends JFrame implements IView, ContentListener, Observ
 				break;
 			case minMaxBtnClick:
 				evaluation = new TicTacToeEvaluation(aiMark, Configuration.CHAIN_TO_WIN);
-				addPlayer(new AIPlayer("AI", aiMark, new MinMaxSearch(evaluation, evaluation, Configuration.DEPTH)));
+				addPlayer(new AIPlayer("AI", aiMark, new MinMaxSearch(evaluation, evaluation,
+						Configuration.DEPTH)));
+				break;
+			case alphaBettaBtnClick:
+				evaluation = new TicTacToeEvaluation(aiMark, Configuration.CHAIN_TO_WIN);
+				addPlayer(new AIPlayer("AI", aiMark, new AlphaBetaSearch(evaluation, evaluation,
+						Configuration.DEPTH)));
 				break;
 			case TileCilck:
 				if (enabledMoves) {

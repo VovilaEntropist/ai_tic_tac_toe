@@ -25,7 +25,7 @@ public class Board extends JPanel {
 	public Board(Rectangle rectangle, int rows, int columns, Content content, ContentListener listener,
 	             BufferedImage xImage, BufferedImage oImage) {
 		this.setBounds(rectangle);
-		this.setLayout(null);
+		
 		this.xImage = xImage;
 		this.oImage = oImage;
 		this.content = content;
@@ -35,17 +35,14 @@ public class Board extends JPanel {
 	}
 	
 	private void init(int rows, int columns) {
-		int tileWidth = (this.getWidth() - (columns - 1) * BORDER)/ columns;
-		int tileHeight = (this.getHeight() - (rows - 1) * BORDER) / rows;
-		
+		this.setLayout(new GridLayout(rows, columns, 25, 25));
+
 		tiles = new Tile[rows][];
 		for (int i = 0; i < rows; i++) {
 			tiles[i] = new Tile[columns];
 			for (int j = 0; j < columns; j++) {
-				int xPos = j * (tileWidth + BORDER);
-				int yPos = i * (tileHeight + BORDER);
-				tiles[i][j] = new Tile(new Rectangle(xPos, yPos, tileWidth, tileHeight),
-						new Index(i, j), Mark.Empty, xImage, oImage, content, listener);
+				tiles[i][j] = new Tile(new Index(i, j), Mark.Empty, xImage, oImage,
+						content, listener);
 				
 				this.add(tiles[i][j]);
 			}
