@@ -27,4 +27,9 @@ public class Index implements Serializable {
 	public void setColumn(int column) {
 		this.column = column;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("[%d, %d]", row, column);
+	}
 }

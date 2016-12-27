@@ -6,7 +6,7 @@ import java.util.*;
 
 public class DepthFirstSearch implements Search {
 	
-	private List<GraphNode> discoveredNodes = new ArrayList<>();
+	private List<AbstractGraphNode> discoveredNodes = new ArrayList<>();
 	
 	private SolutionChecker checker;
 	private int depth;
@@ -16,8 +16,8 @@ public class DepthFirstSearch implements Search {
 		this.depth = depth;
 	}
 	
-	public boolean isDiscovered(GraphNode current) {
-		for (GraphNode node : discoveredNodes) {
+	public boolean isDiscovered(AbstractGraphNode current) {
+		for (AbstractGraphNode node : discoveredNodes) {
 			if (current.equals(node)) {
 				return true;
 			}
@@ -26,19 +26,19 @@ public class DepthFirstSearch implements Search {
 	}
 	
 	@Override
-	public SearchResult search(GraphNode initial) {
+	public SearchResult search(AbstractGraphNode initial) {
 		if (checker.isSolution(initial)) {
-			return new SearchResult(initial, 1);
+			return new SearchResult(NodeUtils.formBranch(initial));
 		}
 		
-		Stack<GraphNode> stack = new Stack<>();
+		Stack<AbstractGraphNode> stack = new Stack<>();
 		stack.push(initial);
 		
 		while (!stack.isEmpty() && depth-- >= 0) {
-			GraphNode current = stack.pop();
+			AbstractGraphNode current = stack.pop();
 			
 			if (checker.isSolution(current)) {
-				return new SearchResult(current, 1);
+				return new SearchResult(NodeUtils.formBranch(current));
 			}
 			
 			if (!isDiscovered(current)) {
@@ -47,6 +47,8 @@ public class DepthFirstSearch implements Search {
 			}
 		}
 		
-		return new SearchResult(-1);
+		return new SearchResult();
 	}
+	
+
 }

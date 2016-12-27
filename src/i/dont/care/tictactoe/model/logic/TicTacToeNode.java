@@ -1,44 +1,45 @@
 package i.dont.care.tictactoe.model.logic;
 
+import i.dont.care.search.AbstractGraphNode;
 import i.dont.care.tictactoe.model.board.CellArray;
 import i.dont.care.tictactoe.model.board.Mark;
 import i.dont.care.search.NodeCollection;
-import i.dont.care.search.interfaces.GraphNode;
+import i.dont.care.search.interfaces.IGraphNode;
 
-public class TicTacToeNode implements GraphNode {
+public class TicTacToeNode extends AbstractGraphNode {
 	
-	private CellArray board;
-	private Step lastStep;
+	private GameState gameState;
 	
-	public TicTacToeNode(CellArray board, Step lastStep) {
-		this.board = board;
-		this.lastStep = lastStep;
+	public TicTacToeNode(AbstractGraphNode parent, GameState gameState) {
+		super(parent);
+		this.gameState = gameState;
 	}
 	
-	public CellArray getBoard() {
-		return board;
-	}
-	
-	public Step getLastStep() {
-		return lastStep;
+	public GameState getGameState() {
+		return gameState;
 	}
 	
 	@Override
 	public NodeCollection getChildNodes() {
 		NodeCollection nodes = new NodeCollection();
 		
-		if (lastStep == null || lastStep.getMark() == Mark.Empty) {
+		if (gameState.getLastStep() == null || gameState.getLastStep().getMark() == Mark.Empty) {
 			return nodes;
 		}
 		
-		Mark nextMark = lastStep.getMark() == Mark.Player1 ? Mark.Player2 : Mark.Player1;
+		Mark nextMark = gameState.getLastStep().getMark() == Mark.Player1 ? Mark.Player2 : Mark.Player1;
 		
-		board.forEachEmpty((index, cell) -> {
-			CellArray newBoard = board.copy();
+		gameState.getBoard().forEachEmpty((index, cell) -> {
+			CellArray newBoard = gameState.getBoard().copy();
 			newBoard.set(index, nextMark);
-			nodes.add(new TicTacToeNode(newBoard, new Step(index, nextMark)));
+			nodes.add(new TicTacToeNode(this, new GameState(newBoard, new Step(index, nextMark))));
 		});
 		
 		return nodes;
+	}
+	
+	@Override
+	public String toString() {
+		return gameState.toString();
 	}
 }

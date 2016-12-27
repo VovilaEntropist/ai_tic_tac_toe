@@ -1,6 +1,6 @@
 package i.dont.care.search;
 
-import i.dont.care.search.interfaces.GraphNode;
+import i.dont.care.search.interfaces.IGraphNode;
 import i.dont.care.search.interfaces.Search;
 import i.dont.care.search.interfaces.SolutionChecker;
 
@@ -8,7 +8,7 @@ import java.util.*;
 
 public class BreadthFirstSearch implements Search {
 	
-	private List<GraphNode> discoveredNodes = new ArrayList<>();
+	private List<IGraphNode> discoveredNodes = new ArrayList<>();
 	
 	private SolutionChecker checker;
 	private int depth;
@@ -18,8 +18,8 @@ public class BreadthFirstSearch implements Search {
 		this.depth = depth;
 	}
 	
-	public boolean isDiscovered(GraphNode current) {
-		for (GraphNode node : discoveredNodes) {
+	public boolean isDiscovered(IGraphNode current) {
+		for (IGraphNode node : discoveredNodes) {
 			if (current.equals(node)) {
 				return true;
 			}
@@ -28,20 +28,20 @@ public class BreadthFirstSearch implements Search {
 	}
 	
 	@Override
-	public SearchResult search(GraphNode initial) {
+	public SearchResult search(AbstractGraphNode initial) {
 		if (checker.isSolution(initial)) {
-			return new SearchResult(initial, 1);
+			return new SearchResult(NodeUtils.formBranch(initial));
 		}
 		
-		List<GraphNode> queue = new LinkedList<>();
+		List<AbstractGraphNode> queue = new LinkedList<>();
 		queue.add(initial);
 		
 		while (!queue.isEmpty() && depth-- >= 0) {
-			GraphNode current = queue.get(0);
+			AbstractGraphNode current = queue.get(0);
 			queue.remove(0);
 			
 			if (checker.isSolution(current)) {
-				return new SearchResult(current, 1);
+				return new SearchResult(NodeUtils.formBranch(current));
 			}
 			
 			if (!isDiscovered(current)) {
@@ -50,6 +50,6 @@ public class BreadthFirstSearch implements Search {
 			}
 		}
 		
-		return new SearchResult(-1);
+		return new SearchResult();
 	}
 }

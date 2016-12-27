@@ -20,4 +20,9 @@ public class Step {
 	public Mark getMark() {
 		return mark;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("%s->%s", mark, index);
+	}
 }

@@ -30,4 +30,8 @@ public enum Mark implements Serializable {
 		return marks[0];
 	}
 	
+	@Override
+	public String toString() {
+		return String.valueOf(value);
+	}
 }

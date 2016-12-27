@@ -2,10 +2,10 @@ package i.dont.care.tictactoe.model.ai;
 
 import i.dont.care.message.Message;
 import i.dont.care.search.*;
-import i.dont.care.search.interfaces.GraphNode;
 import i.dont.care.search.interfaces.Search;
 import i.dont.care.tictactoe.model.Configuration;
 import i.dont.care.tictactoe.model.board.CellArray;
+import i.dont.care.tictactoe.model.logic.GameState;
 import i.dont.care.tictactoe.model.logic.Step;
 import i.dont.care.tictactoe.model.logic.TicTacToeNode;
 import i.dont.care.tictactoe.mvc.IController;
@@ -42,55 +42,23 @@ public class AIProcessor implements Observer {
 			return;
 		}
 		
-		GraphNode initialNode = new TicTacToeNode(board, lastStep);
+		AbstractGraphNode initialNode = new TicTacToeNode(null, new GameState(board, lastStep));
 		
-		if (search instanceof DepthFirstSearch || search instanceof BreadthFirstSearch) {
-			depthFirstSearch(initialNode);
-		} else if (search instanceof MinMaxSearch){
-			minMaxSearch(initialNode);
-		}
+		SearchResult searchResult = search.search(initialNode);
+		NodeCollection nodes = searchResult.getBranch();
 		
-		CellArray board = ((TicTacToeNode) initialNode).getBoard();
-		doMove(board.getAnyEmpty());
-	}
-	
-	private void depthFirstSearch(GraphNode initialNode) {
-		for (GraphNode node : initialNode.getChildNodes()) {
-			SearchResult searchResult = search.search(node);
+		if (nodes != null && nodes.size() >= 1) {
+			TicTacToeNode nextNode = (TicTacToeNode) nodes.get(1);
 			
-			if (searchResult.getNode() != null) {
-				Step betterStep = ((TicTacToeNode) node).getLastStep();
-				
-				doMove(betterStep.getIndex());
-				uploadInfo(searchResult.getSearchInfo().toString());
-				return;
-			}
-		}
-	}
-	
-	private void minMaxSearch(GraphNode initialNode) {
-		GraphNode bestNode = null;
-		int maxEval = Integer.MIN_VALUE;
-		
-		NodeCollection nodes = initialNode.getChildNodes();
-		for (GraphNode node : nodes) {
-			SearchResult searchResult = search.search(node);
-			
-			if (searchResult.getEval() > maxEval) {
-				maxEval = searchResult.getEval();
-				bestNode = node;
-			}
-		}
-		
-		if (bestNode != null) {
-			Step betterStep = ((TicTacToeNode) bestNode).getLastStep();
-			
-			doMove(betterStep.getIndex());
+			doMove(nextNode.getGameState().getLastStep().getIndex());
 			//uploadInfo(searchResult.getSearchInfo().toString());
-			return;
+		} else {
+			doMove(board.getAnyEmpty());
 		}
+		
+		
 	}
-	
+
 	private void updateBoard(CellArray board, Step lastStep) {
 		this.board = board;
 		this.lastStep = lastStep;

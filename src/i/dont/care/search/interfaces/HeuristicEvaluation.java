@@ -1,7 +1,9 @@
 package i.dont.care.search.interfaces;
 
+import i.dont.care.search.AbstractGraphNode;
+
 public interface HeuristicEvaluation {
 	
-	int evaluate(GraphNode node);
+	int evaluate(AbstractGraphNode node);
 	
 }

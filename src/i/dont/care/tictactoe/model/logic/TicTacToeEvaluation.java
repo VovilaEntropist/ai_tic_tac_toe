@@ -1,6 +1,7 @@
 package i.dont.care.tictactoe.model.logic;
 
-import i.dont.care.search.interfaces.GraphNode;
+import i.dont.care.search.AbstractGraphNode;
+import i.dont.care.search.interfaces.IGraphNode;
 import i.dont.care.search.interfaces.HeuristicEvaluation;
 import i.dont.care.search.interfaces.SolutionChecker;
 import i.dont.care.search.interfaces.TerminalNodeChecker;
@@ -23,39 +24,40 @@ public class TicTacToeEvaluation implements TerminalNodeChecker, HeuristicEvalua
 	}
 	
 	@Override
-	public boolean isTerminal(GraphNode node) {
+	public boolean isTerminal(AbstractGraphNode node) {
 		int eval = evaluate(node);
 		return eval != NONE;
 	}
 	
 	@Override
-	public boolean isSolution(GraphNode node) {
+	public boolean isSolution(AbstractGraphNode node) {
 		int eval = evaluate(node);
 		return eval == WIN;
 	}
 	
 	@Override
-	public int evaluate(GraphNode graphNode) {
+	public int evaluate(AbstractGraphNode graphNode) {
 		//TODO замутить проверку и кидать эксепшн
 		TicTacToeNode node = (TicTacToeNode) graphNode;
+		GameState gameState = node.getGameState();
 		
-		if (isDecisionOnDirect(node, TicTacToeEvaluation.Direction.Horizontally)
-				|| isDecisionOnDirect(node, TicTacToeEvaluation.Direction.Vertically)
-				|| isDecisionOnDirect(node, TicTacToeEvaluation.Direction.MainDiagonal)
-				|| isDecisionOnDirect(node, TicTacToeEvaluation.Direction.AntiDiagonal)) {
-			return winMark == node.getLastStep().getMark() ? WIN : LOSE;
+		if (isDecisionOnDirect(gameState, TicTacToeEvaluation.Direction.Horizontally)
+				|| isDecisionOnDirect(gameState, TicTacToeEvaluation.Direction.Vertically)
+				|| isDecisionOnDirect(gameState, TicTacToeEvaluation.Direction.MainDiagonal)
+				|| isDecisionOnDirect(gameState, TicTacToeEvaluation.Direction.AntiDiagonal)) {
+			return winMark == gameState.getLastStep().getMark() ? WIN : LOSE;
 		}
 		
-		if (node.getBoard().getEmptyCount() == 0) {
+		if (gameState.getBoard().getEmptyCount() == 0) {
 			return DRAW;
 		}
 		
 		return NONE;
 	}
 	
-	private boolean isDecisionOnDirect(TicTacToeNode node, TicTacToeEvaluation.Direction direction) {
-		CellArray board = node.getBoard();
-		Step step = node.getLastStep();
+	private boolean isDecisionOnDirect(GameState gameState, TicTacToeEvaluation.Direction direction) {
+		CellArray board = gameState.getBoard();
+		Step step = gameState.getLastStep();
 		
 		int counter = 0;
 		for (int dx = -chainLength + 1; dx < chainLength; dx++) {

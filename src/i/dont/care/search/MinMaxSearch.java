@@ -15,32 +15,57 @@ public class MinMaxSearch implements Search {
 	}
 	
 	@Override
-	public SearchResult search(GraphNode node) {
-		int eval = searchMinMax(node, depth, true);
-		return new SearchResult(eval);
+	public SearchResult search(AbstractGraphNode node) {
+		NodeCollection nodes = NodeUtils.formBranch(searchMinMax(node, depth, true).getNode());
+		return new SearchResult();
 	}
 	
-	private int searchMinMax(GraphNode node, int depth, boolean maximizingPlayer) {
+	private ResultWrapper searchMinMax(AbstractGraphNode node, int depth, boolean maximizingPlayer) {
 		if (depth == 0 || checker.isTerminal(node)) {
-			return heuristic.evaluate(node);
+			return new ResultWrapper(heuristic.evaluate(node), node);
 		}
 		
 		int bestValue;
 		if (maximizingPlayer) {
 			bestValue = Integer.MIN_VALUE;
-			for (GraphNode current : node.getChildNodes()) {
-				int eval = searchMinMax(current, --depth, false);
+			for (AbstractGraphNode current : node.getChildNodes()) {
+				int eval = searchMinMax(current, --depth, false).getEval();
 				bestValue = Integer.max(bestValue, eval);
 			}
-			return bestValue;
+			return new ResultWrapper(bestValue, node);
 		} else {
 			bestValue = Integer.MAX_VALUE;
-			for (GraphNode current : node.getChildNodes()) {
-				int eval = searchMinMax(current, --depth, true);
+			for (AbstractGraphNode current : node.getChildNodes()) {
+				int eval = searchMinMax(current, --depth, true).getEval();
 				bestValue = Integer.min(bestValue, eval);
 			}
-			return bestValue;
+			return new ResultWrapper(bestValue, node);
 		}
 	}
 	
+	private class ResultWrapper {
+		private int eval;
+		private AbstractGraphNode node;
+		
+		public ResultWrapper(int eval, AbstractGraphNode node) {
+			this.eval = eval;
+			this.node = node;
+		}
+		
+		public int getEval() {
+			return eval;
+		}
+		
+		public void setEval(int eval) {
+			this.eval = eval;
+		}
+		
+		public AbstractGraphNode getNode() {
+			return node;
+		}
+		
+		public void setNode(AbstractGraphNode node) {
+			this.node = node;
+		}
+	}
 }
