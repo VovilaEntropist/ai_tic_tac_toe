@@ -16,56 +16,41 @@ public class MinMaxSearch implements Search {
 	
 	@Override
 	public SearchResult search(AbstractGraphNode node) {
-		NodeCollection nodes = NodeUtils.formBranch(searchMinMax(node, depth, true).getNode());
-		return new SearchResult();
+		int bestEval = Integer.MIN_VALUE;
+		AbstractGraphNode bestMove = null;
+		for (AbstractGraphNode current : node.getChildNodes()) {
+			int eval = searchMinMax(current, depth, false);
+			if (eval > bestEval) {
+				bestEval = eval;
+				bestMove = current;
+			}
+		}
+		
+		NodeCollection nodes = NodeUtils.formBranch(bestMove);
+		return new SearchResult(nodes);
 	}
 	
-	private ResultWrapper searchMinMax(AbstractGraphNode node, int depth, boolean maximizingPlayer) {
+	private int searchMinMax(AbstractGraphNode node, int depth, boolean maximizingPlayer) {
 		if (depth == 0 || checker.isTerminal(node)) {
-			return new ResultWrapper(heuristic.evaluate(node), node);
+			return heuristic.evaluate(node);
 		}
 		
 		int bestValue;
 		if (maximizingPlayer) {
 			bestValue = Integer.MIN_VALUE;
 			for (AbstractGraphNode current : node.getChildNodes()) {
-				int eval = searchMinMax(current, --depth, false).getEval();
+				int eval = searchMinMax(current, --depth, false);
 				bestValue = Integer.max(bestValue, eval);
 			}
-			return new ResultWrapper(bestValue, node);
+			return bestValue;
 		} else {
 			bestValue = Integer.MAX_VALUE;
 			for (AbstractGraphNode current : node.getChildNodes()) {
-				int eval = searchMinMax(current, --depth, true).getEval();
+				int eval = searchMinMax(current, --depth, true);
 				bestValue = Integer.min(bestValue, eval);
 			}
-			return new ResultWrapper(bestValue, node);
+			return bestValue;
 		}
 	}
 	
-	private class ResultWrapper {
-		private int eval;
-		private AbstractGraphNode node;
-		
-		public ResultWrapper(int eval, AbstractGraphNode node) {
-			this.eval = eval;
-			this.node = node;
-		}
-		
-		public int getEval() {
-			return eval;
-		}
-		
-		public void setEval(int eval) {
-			this.eval = eval;
-		}
-		
-		public AbstractGraphNode getNode() {
-			return node;
-		}
-		
-		public void setNode(AbstractGraphNode node) {
-			this.node = node;
-		}
-	}
 }
