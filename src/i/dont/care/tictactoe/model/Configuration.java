@@ -26,7 +26,7 @@ public class Configuration {
 	public static final int GET_STATE = 103;
 	public static final String BOARD = "board";
 	public static final String PLAYER = "player";
-	public static final String REASON = "reason";
+	public static final String TEXT = "reason";
 	
 	public static final String INDEX = "index";
 	public static final String COMMAND = "command";
@@ -37,4 +37,5 @@ public class Configuration {
 	public static final String STEP = "step";
 	
 	public static final int DEPTH = 500; //Integer.MAX_VALUE;
+	public static final int SHOW_INFO = 10;
 }

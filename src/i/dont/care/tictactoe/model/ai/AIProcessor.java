@@ -47,16 +47,18 @@ public class AIProcessor implements Observer {
 		SearchResult searchResult = search.search(initialNode);
 		NodeCollection nodes = searchResult.getBranch();
 		
-		if (nodes != null && nodes.size() >= 1) {
+		if (nodes != null && nodes.size() >= 2) {
 			TicTacToeNode nextNode = (TicTacToeNode) nodes.get(1);
 			
 			doMove(nextNode.getGameState().getLastStep().getIndex());
-			//uploadInfo(searchResult.getSearchInfo().toString());
+			SearchInfo info = searchResult.getSearchInfo();
+			if (info != null) {
+				uploadInfo(String.format("Результат хода ИИ:\n%s\n-------------------------\n\n", info.toString()));
+			}
+			
 		} else {
 			doMove(board.getAnyEmpty());
 		}
-		
-		
 	}
 
 	private void updateBoard(CellArray board, Step lastStep) {

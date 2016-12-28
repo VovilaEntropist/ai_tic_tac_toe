@@ -56,7 +56,7 @@ public class MessageFactory {
 	public static Message createKickPlayer(Player player, String reason) {
 		Message message = new Message(Configuration.KICK_PLAYER);
 		message.addParameter(Configuration.PLAYER, player);
-		message.addParameter(Configuration.REASON, reason);
+		message.addParameter(Configuration.TEXT, reason);
 		return message;
 	}
 	
@@ -99,12 +99,18 @@ public class MessageFactory {
 	
 	public static Message createConnectionError(String text) {
 		Message message = new Message(Configuration.CONNECTION_ERROR);
-		message.addParameter(Configuration.REASON, text);
+		message.addParameter(Configuration.TEXT, text);
 		return message;
 	}
 	
 	public static Message createGameStop() {
 		Message message = new Message(Configuration.GAME_STOP);
+		return message;
+	}
+	
+	public static Message createShowInfo(String info) {
+		Message message = new Message(Configuration.SHOW_INFO);
+		message.addParameter(Configuration.TEXT, info);
 		return message;
 	}
 }

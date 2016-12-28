@@ -10,6 +10,7 @@ import i.dont.care.tictactoe.model.logic.TicTacToeNode;
 import i.dont.care.tictactoe.model.board.CellArray;
 import i.dont.care.tictactoe.model.board.Mark;
 import i.dont.care.utils.Index;
+import javafx.stage.Stage;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -21,16 +22,22 @@ public class TicTacToe extends Observable implements IModel {
 	private static final int PLAYER_COUNT = 2;
 	private static final int CHAIN_LENGTH = 3;
 
-	private final CellArray currentBoard;
+	private CellArray currentBoard;
 	private Step lastStep;
-	private final PlayerCollection players;
+	private PlayerCollection players;
 	private Player movingPlayer;
 	private GameStage stage;
 
 	public TicTacToe() {
+		init();
+	}
+	
+	private void init() {
 		stage = GameStage.Wait;
 		players = new PlayerCollection();
 		currentBoard = new CellArray(ROW_COUNT, COLUMN_COUNT);
+		lastStep = null;
+		movingPlayer = null;
 	}
 	
 	public void doMove(Player player, Index index) {
@@ -73,11 +80,11 @@ public class TicTacToe extends Observable implements IModel {
 		if (checker.evaluate(new TicTacToeNode(null, new GameState(currentBoard, new Step(index, mark)))) > 0) {
 			stage = GameStage.Win;
 			notifyView(MessageFactory.createPlayerWin(player));
-			notifyView(MessageFactory.createGameEnded());
+			endGame();
 		} else if (currentBoard.getEmptyCount() == 0) {
 			stage = GameStage.Tie;
 			notifyView(MessageFactory.createTie());
-			notifyView(MessageFactory.createGameEnded());
+			endGame();
 		} else {
 			movingPlayer = nextPlayer;
 			notifyView(MessageFactory.createStartMove(nextPlayer));
@@ -125,15 +132,20 @@ public class TicTacToe extends Observable implements IModel {
 		return players.get(0);
 	}
 	
+	private void endGame() {
+		init();
+		notifyView(MessageFactory.createGameEnded());
+	}
+	
 	public void removePlayer(Player player) {
 		if (players.remove(player)) {
-			notifyView(MessageFactory.createGameEnded());
+			endGame();
 		}
 	}
 	
 	@Override
 	public void uploadInfo(String info) {
-		
+		notifyView(MessageFactory.createShowInfo(info));
 	}
 	
 	@Override

@@ -24,6 +24,7 @@ import i.dont.care.utils.Index;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -36,6 +37,8 @@ public class MainWindow extends JFrame implements IView, ContentListener, Observ
 	private boolean enabledMoves;
 	private Player player;
 	private Mark aiMark;
+	
+	private String startGameMessage = "";
 	
 	public MainWindow(IController controller) throws HeadlessException {
 		this.controller = controller;
@@ -54,7 +57,7 @@ public class MainWindow extends JFrame implements IView, ContentListener, Observ
 		this.add(contentPanel, BorderLayout.CENTER);
 		
 		this.setTitle("Крестики-нолкики");
-		this.setSize(700, 500);
+		this.setSize(900, 500);
 		//this.setResizable(false);
 		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		
@@ -79,7 +82,14 @@ public class MainWindow extends JFrame implements IView, ContentListener, Observ
 	public void handleContentEvent(Content content, ContentEvent event, Object[] args) {
 		switch (event) {
 			case VsAIBtnClick:
-				contentPanel.show(ContentType.PlayerChoice);
+				//contentPanel.show(ContentType.PlayerChoice);
+				
+				player = new Player("Player", Mark.Player1);
+				aiMark = Mark.Player2;
+				addPlayer(player);
+				
+				contentPanel.show(ContentType.AIChoice);
+				
 				break;
 			case ExitBtnClick:
 				System.exit(0);
@@ -101,21 +111,25 @@ public class MainWindow extends JFrame implements IView, ContentListener, Observ
 				break;
 			case DfsBtnClick:
 				TicTacToeEvaluation evaluation = new TicTacToeEvaluation(aiMark, Configuration.CHAIN_TO_WIN);
-				addPlayer(new AIPlayer("AI", aiMark, new DepthFirstSearch(evaluation, Configuration.DEPTH)));
+				addPlayer(new AIPlayer("AI", aiMark, new DepthFirstSearch(evaluation, evaluation, Configuration.DEPTH)));
+				startGameMessage = "Вы играите против ИИ\nс поиском в глубину";
 				break;
 			case BfsBtnClick:
 				evaluation = new TicTacToeEvaluation(aiMark, Configuration.CHAIN_TO_WIN);
-				addPlayer(new AIPlayer("AI", aiMark, new BreadthFirstSearch(evaluation, Configuration.DEPTH)));
+				addPlayer(new AIPlayer("AI", aiMark, new BreadthFirstSearch(evaluation, evaluation, Configuration.DEPTH)));
+				startGameMessage = "Вы играите против ИИ\nс поиском в ширину";
 				break;
 			case minMaxBtnClick:
 				evaluation = new TicTacToeEvaluation(aiMark, Configuration.CHAIN_TO_WIN);
-				addPlayer(new AIPlayer("AI", aiMark, new MinMaxSearch(evaluation, evaluation,
+				addPlayer(new AIPlayer("AI", aiMark, new MinMaxSearch(evaluation, evaluation, evaluation,
 						Configuration.DEPTH)));
+				startGameMessage = "Вы играите против ИИ\nс минимаксным алгоритмом поиска";
 				break;
 			case alphaBettaBtnClick:
 				evaluation = new TicTacToeEvaluation(aiMark, Configuration.CHAIN_TO_WIN);
-				addPlayer(new AIPlayer("AI", aiMark, new AlphaBetaSearch(evaluation, evaluation,
+				addPlayer(new AIPlayer("AI", aiMark, new AlphaBetaSearch(evaluation, evaluation, evaluation,
 						Configuration.DEPTH)));
+				startGameMessage = "Вы играите против ИИ\nс алгоритмом альфа-бета отсечения";
 				break;
 			case TileCilck:
 				if (enabledMoves) {
@@ -147,23 +161,22 @@ public class MainWindow extends JFrame implements IView, ContentListener, Observ
 	}
 		
 	private void startGame(CellArray board, Player movingPlayer, PlayerCollection players) {
-//		if (movingPlayer.equals(player)) {
-//			messagePanel.setMessage("Ваш ход", 0);
-//		} else {
-//			messagePanel.setMessage("Ходит ваш противник: " + movingPlayer.getNickname(), 0);
-//		}
-
 		String xPath = Configuration.X_MARK_PATH;
 		String oPath = Configuration.O_MARK_PATH;
 		
-		Content gameContent = new Game(contentPanel, ContentType.Game, this, xPath, oPath);
+		Game gameContent = new Game(contentPanel, ContentType.Game, this,
+				xPath, oPath, ContentType.MainMenu);
+		gameContent.showBackButton(false);
+		
 		contentPanel.add(gameContent);
 		
 		contentPanel.show(ContentType.Game);
+		
+		//showInfo(formBlockMessage(startGameMessage));
 	}
 	
 	private void endMove(Player nextPlayer) {
-		messagePanel.setMessage("Ходит ваш противник: " + nextPlayer.getNickname(), 0);
+		//messagePanel.setMessage("Ходит ваш противник: " + nextPlayer.getNickname(), 0);
 		enabledMoves = false;
 	}
 	
@@ -183,23 +196,43 @@ public class MainWindow extends JFrame implements IView, ContentListener, Observ
 	}
 	
 	private void winPlayer(Player player) {
-//		messagePanel.setMessage("Победил игрок: " +  player.getNickname(), 0);
-//
-//		Rectangle contentBounds = new Rectangle(0, 0, contentPanel.getWidth(),
-//				contentPanel.getHeight());
-//		Content gameEnd = new GameEnd(contentBounds, ContentType.GameEnd, this, player);
-//		contents.put(ContentType.GameEnd, gameEnd);
-//		contentPanel.add(gameEnd);
-//
-//		contents.show(ContentType.GameEnd);
+//		String congratulations;
+//		if (player.equals(this.player)) {
+//			congratulations = "Вы победили!";
+//		} else {
+//			congratulations = "Комппьютер выиграл!";
+//		}
+		
+//		showInfo(formBlockMessage(congratulations));
+		
+		((Game) contentPanel.get(ContentType.Game)).showBackButton(true);
 	}
 	
 	private void endGameTie() {
-		messagePanel.setMessage("Ничья", 0);
+		//showInfo(formBlockMessage("Ничья!"));
+		
+		((Game) contentPanel.get(ContentType.Game)).showBackButton(true);
+	}
+	
+	private String formBlockMessage(String message) {
+		StringBuilder sb = new StringBuilder();
+		
+		String delimiter = "---------------------------------------\n";
+		String[] lines = message.split("\n");
+		sb.append(delimiter);
+		Arrays.stream(lines).forEach(s -> sb.append(String.format("| %-30s |\n", s)));
+		sb.append(delimiter);
+		
+		return sb.toString();
 	}
 	
 	private void endGame() {
-		//removePlayer();
+		
+	}
+	
+	private void showInfo(String info) {
+		Game game = (Game) contentPanel.get(ContentType.Game);
+		game.showInfo(info);
 	}
 	
 	@Override
@@ -211,7 +244,7 @@ public class MainWindow extends JFrame implements IView, ContentListener, Observ
 		CellArray board = (CellArray) message.getParameter(Configuration.BOARD);
 		Player player = (Player) message.getParameter(Configuration.PLAYER);
 		PlayerCollection players = (PlayerCollection) message.getParameter(Configuration.PLAYERS);
-		String reason = (String) message.getParameter(Configuration.REASON);
+		String info = (String) message.getParameter(Configuration.TEXT);
 		
 		int command = message.getCommand();
 		switch (command) {
@@ -245,9 +278,12 @@ public class MainWindow extends JFrame implements IView, ContentListener, Observ
 			case Configuration.TIE:
 				endGameTie();
 				break;
+			case Configuration.SHOW_INFO:
+				showInfo(info);
+				break;
 			case Configuration.CONNECTION_ERROR:
 				//removePlayer();
-				System.out.println("Ошибка подключения: " + reason);
+				System.out.println("Ошибка подключения: " + info);
 				break;
 		}
 	}

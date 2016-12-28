@@ -5,11 +5,13 @@ public class SearchResult {
 	private NodeCollection branch;
 	private SearchInfo searchInfo;
 	
-	public SearchResult() {
+	public SearchResult(SearchInfo searchInfo) {
+		this.searchInfo = searchInfo;
 	}
 	
-	public SearchResult(NodeCollection branch) {
+	public SearchResult(NodeCollection branch, SearchInfo searchInfo) {
 		this.branch = branch;
+		this.searchInfo = searchInfo;
 	}
 	
 	public NodeCollection getBranch() {

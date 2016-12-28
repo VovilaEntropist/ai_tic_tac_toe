@@ -46,4 +46,8 @@ public abstract class BackButtonContent extends Content {
 	public void setFrom(ContentType from) {
 		this.from = from;
 	}
+	
+	public void showBackButton(boolean show) {
+		backBtn.setVisible(show);
+	}
 }
